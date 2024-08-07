@@ -198,3 +198,56 @@ function evaluateBoard(board) {
 function evaluateLine(board, step) {
   let score = 0;
   for (let r = 0; r < 6; r++) {
+ for (let c = 0; c < 7 - 3 * step; c++) {
+      let line = step === 1 ? [board[r][c], board[r][c+1], board[r][c+2], board[r][c+3]] :
+                              [board[c][r], board[c+1][r], board[c+2][r], board[c+3][r]];
+      score += evaluateWindow(line);
+    }
+  }
+  return score;
+}
+
+function evaluateDiagonal(board) {
+  let score = 0;
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 4; c++) {
+      let line1 = [board[r][c], board[r+1][c+1], board[r+2][c+2], board[r+3][c+3]];
+      let line2 = [board[r+3][c], board[r+2][c+1], board[r+1][c+2], board[r][c+3]];
+      score += evaluateWindow(line1);
+      score += evaluateWindow(line2);
+    }
+  }
+  return score;
+}
+
+function evaluateWindow(window) {
+  let score = 0;
+  let aiCount = window.filter(cell => cell === 2).length;
+  let emptyCount = window.filter(cell => cell === 0).length;
+  let humanCount = window.filter(cell => cell === 1).length;
+
+  if (aiCount === 4) score += 100;
+  else if (aiCount === 3 && emptyCount === 1) score += 5;
+  else if (aiCount === 2 && emptyCount === 2) score += 2;
+  
+  if (humanCount === 3 && emptyCount === 1) score -= 4;
+
+  return score;
+}
+
+function resetGame() {
+  gameBoard = Array(6).fill().map(() => Array(7).fill(0));
+  currentPlayer = 1;
+  gameOver = false;
+  message.textContent = "Your turn! Click a column to drop your piece.";
+  createBoard();
+}
+
+createBoard();
+board.addEventListener('click', (e) => {
+  if (e.target.classList.contains('cell') && currentPlayer === 1) {
+    dropPiece(parseInt(e.target.dataset.col));
+  }
+});
+resetButton.addEventListener('click', resetGame);
+</script></body></html>
