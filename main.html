@@ -152,3 +152,49 @@ function getNextEmptyRow(col) {
   }
   return -1;
 }
+
+function minimax(board, depth, isMaximizing, alpha, beta) {
+  if (depth === 5) return evaluateBoard(board);
+  
+  if (isMaximizing) {
+    let maxEval = -Infinity;
+    for (let col = 0; col < 7; col++) {
+      let row = getNextEmptyRow(col);
+      if (row !== -1) {
+        board[row][col] = 2;
+        let eval = minimax(board, depth + 1, false, alpha, beta);
+        board[row][col] = 0;
+        maxEval = Math.max(maxEval, eval);
+        alpha = Math.max(alpha, eval);
+        if (beta <= alpha) break;
+      }
+    }
+    return maxEval;
+  } else {
+    let minEval = Infinity;
+    for (let col = 0; col < 7; col++) {
+      let row = getNextEmptyRow(col);
+      if (row !== -1) {
+        board[row][col] = 1;
+        let eval = minimax(board, depth + 1, true, alpha, beta);
+        board[row][col] = 0;
+        minEval = Math.min(minEval, eval);
+        beta = Math.min(beta, eval);
+        if (beta <= alpha) break;
+      }
+    }
+    return minEval;
+  }
+}
+
+function evaluateBoard(board) {
+  let score = 0;
+  score += evaluateLine(board, 2); // Vertical
+  score += evaluateLine(board, 1); // Horizontal
+  score += evaluateDiagonal(board); // Diagonals
+  return score;
+}
+
+function evaluateLine(board, step) {
+  let score = 0;
+  for (let r = 0; r < 6; r++) {
