@@ -97,3 +97,58 @@ function checkWin(row, col) {
   function checkDraw() {
   return gameBoard.every(row => row.every(cell => cell !== 0));
 }
+
+function computerMove() {
+  if (gameOver) return;
+  
+  // Check for immediate win
+  for (let col = 0; col < 7; col++) {
+    let row = getNextEmptyRow(col);
+    if (row !== -1) {
+      gameBoard[row][col] = 2;
+      if (checkWin(row, col)) {
+        dropPiece(col);
+        return;
+      }
+      gameBoard[row][col] = 0;
+    }
+  }
+
+  // Check for immediate block
+  for (let col = 0; col < 7; col++) {
+    let row = getNextEmptyRow(col);
+    if (row !== -1) {
+      gameBoard[row][col] = 1;
+      if (checkWin(row, col)) {
+        gameBoard[row][col] = 0;
+        dropPiece(col);
+        return;
+      }
+      gameBoard[row][col] = 0;
+    }
+  }
+
+  // Use minimax for strategic moves
+  let bestScore = -Infinity;
+  let bestCol = 0;
+  for (let col = 0; col < 7; col++) {
+    let row = getNextEmptyRow(col);
+    if (row !== -1) {
+      gameBoard[row][col] = 2;
+      let score = minimax(gameBoard, 0, false, -Infinity, Infinity);
+      gameBoard[row][col] = 0;
+      if (score > bestScore) {
+        bestScore = score;
+        bestCol = col;
+      }
+    }
+  }
+  dropPiece(bestCol);
+}
+
+function getNextEmptyRow(col) {
+  for (let row = 0; row < 6; row++) {
+    if (gameBoard[row][col] === 0) return row;
+  }
+  return -1;
+}
