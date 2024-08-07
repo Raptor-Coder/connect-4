@@ -47,3 +47,53 @@ function dropPiece(col) {
       if (checkWin(row, col)) {
         gameOver = true;
         message.textContent = currentPlayer === 1 ? "You win!" : "Computer wins!";
+} else if (checkDraw()) {
+        gameOver = true;
+        message.textContent = "It's a draw!";
+      } else {
+        currentPlayer = 3 - currentPlayer;
+        if (currentPlayer === 2) {
+          setTimeout(computerMove, 500);
+        } else {
+          message.textContent = "Your turn!";
+        }
+      }
+      return;
+    }
+  }
+}
+
+function updateBoard() {
+  const cells = document.querySelectorAll('.cell');
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 7; col++) {
+      const index = (5 - row) * 7 + col;
+      cells[index].className = 'cell' + (gameBoard[row][col] === 1 ? ' red' : gameBoard[row][col] === 2 ? ' yellow' : '');
+    }
+  }
+}
+
+function checkWin(row, col) {
+  const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
+  for (let [dx, dy] of directions) {
+    let count = 1;
+    for (let i = 1; i <= 3; i++) {
+      const newRow = row + i * dx;
+      const newCol = col + i * dy;
+      if (newRow < 0 || newRow >= 6 || newCol < 0 || newCol >= 7 || gameBoard[newRow][newCol] !== currentPlayer) break;
+      count++;
+    }
+    for (let i = 1; i <= 3; i++) {
+      const newRow = row - i * dx;
+      const newCol = col - i * dy;
+      if (newRow < 0 || newRow >= 6 || newCol < 0 || newCol >= 7 || gameBoard[newRow][newCol] !== currentPlayer) break;
+      count++;
+    }
+    if (count >= 4) return true;
+  }
+  return false;
+}
+
+  function checkDraw() {
+  return gameBoard.every(row => row.every(cell => cell !== 0));
+}
