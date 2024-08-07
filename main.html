@@ -1,0 +1,49 @@
+<html><head>
+<title>Connect 4: Player vs AI</title>
+<style>
+body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; }
+.game-container { text-align: center; }
+.board { display: inline-grid; grid-template-columns: repeat(7, 50px); grid-gap: 5px; background-color: #0066cc; padding: 10px; border-radius: 10px; }
+.cell { width: 50px; height: 50px; background-color: white; border-radius: 50%; cursor: pointer; transition: background-color 0.3s; }
+.red { background-color: #ff4136; }
+.yellow { background-color: #ffdc00; }
+h1 { color: #0066cc; }
+#message { margin: 20px 0; font-size: 1.2em; font-weight: bold; }
+#reset { padding: 10px 20px; font-size: 1em; background-color: #0066cc; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; }
+#reset:hover { background-color: #004c99; }
+</style></head><body>
+<div class="game-container">
+  <h1>Connect Four: Player vs Smart Computer</h1>
+  <div class="board" id="board"></div>
+  <div id="message">Your turn! Click a column to drop your piece.</div>
+  <button id="reset">Reset Game</button>
+</div>
+<script>
+const board = document.getElementById('board');
+const message = document.getElementById('message');
+const resetButton = document.getElementById('reset');
+let gameBoard = Array(6).fill().map(() => Array(7).fill(0));
+let currentPlayer = 1;
+let gameOver = false;
+
+function createBoard() {
+  board.innerHTML = '';
+  for (let row = 5; row >= 0; row--) {
+    for (let col = 0; col < 7; col++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.col = col;
+      board.appendChild(cell);
+    }
+  }
+}
+
+function dropPiece(col) {
+  if (gameOver) return;
+  for (let row = 0; row < 6; row++) {
+    if (gameBoard[row][col] === 0) {
+      gameBoard[row][col] = currentPlayer;
+      updateBoard();
+      if (checkWin(row, col)) {
+        gameOver = true;
+        message.textContent = currentPlayer === 1 ? "You win!" : "Computer wins!";
